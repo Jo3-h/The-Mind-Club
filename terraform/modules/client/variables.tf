@@ -1,10 +1,10 @@
 variable "tags" {
-  description = "Tags to append to all resources in 'ecr_repos' module"
+  description = "Tags to append to all resources in 'client' module"
   type = map(string)
   default = {}
 }
 
 variable "image" {
-  description = "Client image ARN"
+  description = "Client container image URI (e.g., ECR repo URI with tag or digest)"
   type = string
 }

@@ -30,8 +30,9 @@ data "aws_iam_policy_document" "ecs_service_assume" {
 }
 
 resource "aws_iam_role" "infrastructure" {
-  name               = "mm-ecs-infrastructure-${terraform.workspace}"
+  name               = "mcs-ecs-infrastructure-${terraform.workspace}"
   assume_role_policy = data.aws_iam_policy_document.ecs_service_assume.json
+  tags               = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "infrastructure_managed" {
@@ -40,7 +41,7 @@ resource "aws_iam_role_policy_attachment" "infrastructure_managed" {
 }
 
 resource "aws_ecs_express_gateway_service" "client" {
-    service_name = "mm-ecs-${terraform.workspace}"
+    service_name = "mcs-ecs-${terraform.workspace}"
     execution_role_arn = aws_iam_role.execution.arn
     infrastructure_role_arn = aws_iam_role.infrastructure.arn
     
