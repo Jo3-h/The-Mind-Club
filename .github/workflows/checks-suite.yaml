@@ -1,0 +1,15 @@
+name: Checks Suite
+
+on:
+  workflow_call:
+    inputs:
+      terraform:
+        description: "Run terraform checks"
+        type: boolean
+        required: false
+        default: true
+
+jobs:
+  terraform:
+    if: ${{ inputs.terraform }}
+    uses: ./.github/workflows/terraform-checks.yaml
