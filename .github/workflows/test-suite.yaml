@@ -1,0 +1,8 @@
+name: Testing Suite
+
+on:
+  workflow_call:
+
+jobs:
+  client:
+    uses: ./.github/workflows/client-tests.yaml
