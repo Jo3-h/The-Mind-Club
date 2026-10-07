@@ -1,0 +1,61 @@
+:root {
+	--delta-lightness: 12%;
+
+	/* primary colour */
+	--o-hue: 25;
+	--o-saturation: 100%;
+	--o-lightness: 40%;
+	--lightest-orange: hsl(
+		var(--o-hue),
+		var(--o-saturation),
+		calc(var(--o-lightness) + 2 * var(--delta-lightness))
+	);
+	--light-orange: hsl(
+		var(--o-hue),
+		var(--o-saturation),
+		calc(var(--o-lightness) + var(--delta-lightness))
+	);
+	--orange: hsl(var(--o-hue), var(--o-saturation), var(--o-lightness));
+	--dark-orange: hsl(
+		var(--o-hue),
+		var(--o-saturation),
+		calc(var(--o-lightness) - var(--delta-lightness))
+	);
+	--darkest-orange: hsl(
+		var(--o-hue),
+		var(--o-saturation),
+		calc(var(--o-lightness) - 2 * var(--delta-lightness))
+	);
+
+	/* secondary colour */
+	--b-hue: 195;
+	--b-saturation: 53%;
+	--b-lightness: 79%;
+	--lightest-blue: hsl(
+		var(--b-hue),
+		var(--b-saturation),
+		calc(var(--b-lightness) + 2 * var(--delta-lightness))
+	);
+	--light-blue: hsl(
+		var(--b-hue),
+		var(--b-saturation),
+		calc(var(--b-lightness) + 1 * var(--delta-lightness))
+	);
+	--blue: hsl(
+		var(--b-hue),
+		var(--b-saturation),
+		calc(var(--b-lightness) + 0 * var(--delta-lightness))
+	);
+	--dark-blue: hsl(
+		var(--b-hue),
+		var(--b-saturation),
+		calc(var(--b-lightness) - 1 * var(--delta-lightness))
+	);
+	--darkest-blue: hsl(
+		var(--b-hue),
+		var(--b-saturation),
+		calc(var(--b-lightness) - 2 * var(--delta-lightness))
+	);
+
+	/* teriary colour*/
+}

@@ -1,0 +1,14 @@
+:root {
+	/* Border sizes */
+	--border-radius: 0.5rem;
+	--border-small: 0.2rem;
+	--gap: 0.5rem;
+	--gap-large: 2rem;
+
+	/* Font Sizes */
+	--text-fine: 0.5rem;
+	--text-small: 0.8rem;
+	--text-medium: 1rem;
+	--text-large: 1.5rem;
+	--text-title: 2.5rem;
+}
