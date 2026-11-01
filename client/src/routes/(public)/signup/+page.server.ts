@@ -1,11 +1,11 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import * as z from 'zod';
-import { SignupSchema, STUDENT_ACCOUNT_TYPE, TUTOR_ACCOUNT_TYPE } from '$lib/schemas/auth';
+import { SignupSchema, STUDENT_ACCOUNT_TYPE, TUTOR_ACCOUNT_TYPE } from '$lib/schemas/auth/auth';
 import { formToObject } from '$lib/utils/forms';
 import { auth } from '$lib/server/auth';
-import { createDefaultTutor } from '$lib/server/repositories/tutor';
-import { createDefaultStudent } from '$lib/server/repositories/student';
+import { Tutor } from '$lib/server/repositories/tutor';
+import { Student } from '$lib/server/repositories/student';
 
 export const load: PageServerLoad = (event) => {
 	if (event.locals.user) {
@@ -30,14 +30,13 @@ export const actions: Actions = {
 				body: {
 					email,
 					password,
-					name,
-					role: accountType
+					name
 				}
 			});
 			if (accountType === STUDENT_ACCOUNT_TYPE) {
-				await createDefaultStudent({ user });
+				await Student.createDefault({ user });
 			} else if (accountType === TUTOR_ACCOUNT_TYPE) {
-				const profile = await createDefaultTutor({ user });
+				const profile = await Tutor.createDefault({ user });
 				console.log('profile', profile);
 			}
 		} catch (err) {

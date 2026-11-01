@@ -1,0 +1,8 @@
+{
+  "cSpell.words": ["colour", "Colours"]
+},
+{
+  "key": "cmd+backspace",
+  "command": "editor.action.deleteLines",
+  "when": "editorTextFocus && !editorReadonly"
+}

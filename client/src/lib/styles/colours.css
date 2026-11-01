@@ -1,5 +1,8 @@
 :root {
-	--delta-lightness: 12%;
+	/* Base Colours */
+	--grey: rgba(255, 255, 255, 0.778);
+
+	--delta-lightness: 5%;
 
 	/* primary colour */
 	--o-hue: 25;
@@ -57,5 +60,34 @@
 		calc(var(--b-lightness) - 2 * var(--delta-lightness))
 	);
 
-	/* teriary colour*/
+	/* EMERALD */
+	--e-hue: hsl(161, 94%, 30%);
+	--e-hue: 161;
+	--e-saturation: 94%;
+	--e-lightness: 30%;
+	--lightest-emerald: hsl(
+		var(--e-hue),
+		var(--e-saturation),
+		calc(var(--e-lightness) + 2 * var(--delta-lightness))
+	);
+	--light-emerald: hsl(
+		var(--e-hue),
+		var(--e-saturation),
+		calc(var(--e-lightness) + 1 * var(--delta-lightness))
+	);
+	--emerald: hsl(
+		var(--e-hue),
+		var(--e-saturation),
+		calc(var(--e-lightness) + 0 * var(--delta-lightness))
+	);
+	--dark-emerald: hsl(
+		var(--e-hue),
+		var(--e-saturation),
+		calc(var(--e-lightness) - 1 * var(--delta-lightness))
+	);
+	--darkest-emerald: hsl(
+		var(--e-hue),
+		var(--e-saturation),
+		calc(var(--e-lightness) - 2 * var(--delta-lightness))
+	);
 }

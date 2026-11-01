@@ -3,14 +3,23 @@
 
 	interface Props extends HTMLButtonAttributes {
 		colour?: 'orange' | 'blue' | 'white';
+		directive?: 'primary' | 'secondary' | 'theme';
 	}
 
-	const { children, colour = 'white', ...restProps }: Props = $props();
+	const { children, colour = 'white', directive = 'secondary', ...restProps }: Props = $props();
 	const isBlue = $derived(colour === 'blue');
 	const isOrange = $derived(colour === 'orange');
 </script>
 
-<button class="button" class:blue={isBlue} class:orange={isOrange} {...restProps}>
+<button
+	class="button"
+	class:blue={isBlue}
+	class:orange={isOrange}
+	class:primary={directive === 'primary'}
+	class:secondary={directive === 'secondary'}
+	class:theme={directive === 'theme'}
+	{...restProps}
+>
 	{@render children?.()}
 </button>
 
@@ -20,38 +29,45 @@
 		padding-inline: calc(2 * var(--gap));
 		padding-block: calc(var(--gap) / 2);
 		cursor: pointer;
-		font-weight: bold;
+		background-color: white;
+		border: 1px solid var(--grey);
 		box-shadow:
-			0 6px 14px rgb(0 0 0 / 0.12),
-			0 2px 4px rgb(0 0 0 / 0.08);
+			0 2px 6px rgb(0 0 0 / 0.08),
+			0 1px 2px rgb(0 0 0 / 0.05);
 		transition:
 			transform 120ms ease,
 			box-shadow 120ms ease;
 
-		&.blue {
-			color: var(--darkest-blue);
-			border: 1px solid var(--light-blue);
-			background: var(--lightest-blue);
+		&.primary {
+			color: white;
+			border: 1px solid black;
+			background: black;
 		}
 
-		&.orange {
+		&.secondary {
+			color: black;
+			border: 1px solid var(--grey);
+			background: white;
+		}
+
+		&.theme {
 			color: white;
-			border: 1px solid var(--dark-orange);
-			background: var(--light-orange);
+			border: 1px solid var(--dark-emerald);
+			background: var(--emerald);
 		}
 	}
 
 	.button:hover {
 		transform: translateY(1px) scale(0.99, 0.97);
 		box-shadow:
-			0 3px 8px rgb(0 0 0 / 0.12),
-			0 1px 2px rgb(0 0 0 / 0.08);
+			0 1px 4px rgb(0 0 0 / 0.08),
+			0 1px 1px rgb(0 0 0 / 0.05);
 	}
 
 	.button:active {
 		transform: translateY(2px) scale(0.985, 0.95);
 		box-shadow:
-			0 1px 3px rgb(0 0 0 / 0.14) inset,
-			0 1px 2px rgb(0 0 0 / 0.08);
+			0 1px 2px rgb(0 0 0 / 0.1) inset,
+			0 1px 1px rgb(0 0 0 / 0.05);
 	}
 </style>

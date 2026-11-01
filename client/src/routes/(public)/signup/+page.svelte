@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import GoogleButton from '$lib/components/auth/GoogleButton.svelte';
 	import Button from '$lib/components/basic/Button.svelte';
-	import { SignupSchema } from '$lib/schemas/auth';
+	import { SignupSchema } from '$lib/schemas/auth/auth';
 
 	let email = $state('');
 	let password = $state('');
@@ -18,21 +19,7 @@
 	});
 </script>
 
-<div class="login-page">
-	<div class="landing">
-		<span class="annotation">{'The Mind Club'.toUpperCase()}</span>
-		<span class="title">An account is only for booking, paying, and keeping records.</span>
-		<hr />
-		<span>Payments handled by <span>Stripe</span> - we never store card details!</span>
-		<hr />
-		<span>Parents can hold the account and add a student under 16.</span>
-		<hr />
-		<span>Every receipt shows the rung you paid and any refund issued.</span>
-		<hr />
-		<div style="margin-top: auto; font-size: var(--text-small);">
-			<span>Belief . Commitment . Integrity</span>
-		</div>
-	</div>
+<div class="signup-page">
 	<div class="signup">
 		<span class="title">Signup for an account</span>
 		<span>Welcome back! Your groups and bookings are right where you left them.</span>
@@ -59,25 +46,6 @@
 				}
 			}}
 		>
-			<span>ACCOUNT TYPE</span>
-			<fieldset>
-				<legend>Choose your account type:</legend>
-				<label>
-					<input
-						type="radio"
-						name="accountType"
-						value="student"
-						bind:group={accountType}
-						required
-					/>
-					Student
-				</label>
-				<label>
-					<input type="radio" name="accountType" value="tutor" bind:group={accountType} required />
-					Tutor
-				</label>
-			</fieldset>
-
 			<span>NAME</span>
 			<input name="name" type="name" placeholder="name" bind:value={name} required />
 
@@ -104,45 +72,19 @@
 				<p class="error" role="alert">{errorMessage}</p>
 			{/if}
 
-			<Button>Signup</Button>
+			<Button directive="theme">Signup</Button>
 		</form>
+		<GoogleButton />
 		<hr />
 		<span>Already have an account? <a href="/login">Login here</a>.</span>
 	</div>
 </div>
 
 <style>
-	.login-page {
+	.signup-page {
 		display: grid;
 		width: 100%;
-		grid-template-columns: 1fr 1fr;
 		justify-items: center;
-
-		& > .landing {
-			background-color: var(--darkest-blue);
-			padding-block: 5rem 1rem;
-			padding-inline: var(--gap-large);
-			display: flex;
-			flex-direction: column;
-			gap: var(--gap);
-			color: var(--lightest-blue);
-			font-size: var(--text-medium);
-
-			& > .annotation {
-				font-size: var(--text-small);
-			}
-
-			& > .title {
-				font-size: var(--text-title);
-				font-weight: bold;
-			}
-
-			& > span {
-				& > span {
-					font-style: italic;
-				}
-			}
-		}
 
 		& > .signup {
 			padding-block: 5rem;
@@ -152,7 +94,7 @@
 			flex-direction: column;
 			gap: var(--gap);
 			font-size: var(--text-small);
-			color: var(--darkest-blue);
+			color: black;
 
 			& > .title {
 				font-size: var(--text-large);
@@ -171,21 +113,91 @@
 				padding: var(--gap);
 			}
 		}
+	}
 
-		a {
-			color: var(--light-orange);
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	.account-type {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.5rem;
+		border: none;
+		padding: 0;
+		margin: 0 0 var(--gap);
+	}
+
+	.option {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		padding: 0.75rem;
+		border: 1px solid #eaeaea;
+		border-radius: 6px;
+		background: #fff;
+		cursor: pointer;
+		transition:
+			border-color 150ms ease,
+			box-shadow 150ms ease;
+
+		&:hover {
+			border-color: #999;
 		}
-		a:hover {
-			color: var(--light-orange);
-			text-decoration: underline;
-			cursor: pointer;
+
+		/* hide the native radio but keep it focusable */
+		& > input {
+			position: absolute;
+			opacity: 0;
+			pointer-events: none;
+		}
+
+		&:has(input:checked) {
+			border-color: #000;
+			box-shadow: 0 0 0 1px #000;
+		}
+
+		&:has(input:focus-visible) {
+			outline: 2px solid #0070f3;
+			outline-offset: 2px;
 		}
 	}
 
-	hr {
-		border: 0;
-		height: 1px;
-		background: var(--lightest-blue);
-		width: 100%;
+	.option-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.option-title {
+		font-weight: 600;
+		color: #000;
+	}
+
+	.option-desc {
+		color: #666;
+		font-size: 0.75rem;
+		line-height: 1.4;
+	}
+
+	.indicator {
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+		border: 1px solid #ccc;
+		transition: all 150ms ease;
+
+		.option:has(input:checked) & {
+			border: 4px solid #000;
+		}
 	}
 </style>

@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms';
 	import Box from '../basic/Box.svelte';
 	import Button from '../basic/Button.svelte';
+	import HeroIcon from '../branding/HeroIcon.svelte';
 
 	interface Props {
 		user: App.Locals['user'];
@@ -10,8 +11,8 @@
 </script>
 
 <header>
-	<a href={user ? '/dashboard' : '/'}>
-		<span class="header-title">The Mind Club</span>
+	<a href={user ? '/' : '/'}>
+		<HeroIcon size="3rem" --fg="#000000" />
 	</a>
 
 	<div class="nav-items">
@@ -44,19 +45,21 @@
 		display: flex;
 		flex-direction: row;
 		gap: space-between;
-		border-bottom: 1px solid var(--dark-blue);
+		border-bottom: 1px solid var(--gray);
 
 		a {
 			text-decoration: none;
 		}
 
 		.header-title {
-			font-style: italic;
 			margin-inline: var(--gap);
 			font-weight: bold;
+			color: var(--darkest-emerald);
 			font-size: 2rem;
-			color: var(--light-orange);
 			white-space: nowrap;
+		}
+
+		a {
 		}
 
 		.nav-items {

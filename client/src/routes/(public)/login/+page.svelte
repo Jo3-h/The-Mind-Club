@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import GoogleButton from '$lib/components/auth/GoogleButton.svelte';
 	import Button from '$lib/components/basic/Button.svelte';
-	import { EmailSchema } from '$lib/schemas/auth';
+	import { EmailSchema } from '$lib/schemas/auth/auth';
 
 	let email = $state('');
 	let password = $state('');
@@ -15,20 +16,6 @@
 </script>
 
 <div class="login-page">
-	<div class="landing">
-		<span class="annotation">{'The Mind Club'.toUpperCase()}</span>
-		<span class="title">An account is only for booking, paying, and keeping records.</span>
-		<hr />
-		<span>Payments handled by <span>Stripe</span> - we never store card details!</span>
-		<hr />
-		<span>Parents can hold the account and add a student under 16.</span>
-		<hr />
-		<span>Every receipt shows the rung you paid and any refund issued.</span>
-		<hr />
-		<div style="margin-top: auto; font-size: var(--text-small);">
-			<span>Belief . Commitment . Integrity</span>
-		</div>
-	</div>
 	<div class="login">
 		<span class="title"> Login to your account</span>
 		<span>Welcome back! Your groups and bookings are right where you left them.</span>
@@ -67,8 +54,10 @@
 				<p class="error" role="alert">{errorMessage}</p>
 			{/if}
 
-			<Button>Login</Button>
+			<Button directive="theme">Login</Button>
 		</form>
+		<span class="or"></span>
+		<GoogleButton />
 		<hr />
 		<span>Don't have an account? <a href="/signup">Sign up here</a>.</span>
 	</div>
@@ -78,34 +67,7 @@
 	.login-page {
 		display: grid;
 		width: 100%;
-		grid-template-columns: 1fr 1fr;
 		justify-items: center;
-
-		& > .landing {
-			background-color: var(--darkest-blue);
-			padding-block: 5rem 1rem;
-			padding-inline: var(--gap-large);
-			display: flex;
-			flex-direction: column;
-			gap: var(--gap);
-			color: var(--lightest-blue);
-			font-size: var(--text-medium);
-
-			& > .annotation {
-				font-size: var(--text-small);
-			}
-
-			& > .title {
-				font-size: var(--text-title);
-				font-weight: bold;
-			}
-
-			& > span {
-				& > span {
-					font-style: italic;
-				}
-			}
-		}
 
 		& > .login {
 			padding-block: 5rem;
@@ -115,7 +77,7 @@
 			flex-direction: column;
 			gap: var(--gap);
 			font-size: var(--text-small);
-			color: var(--darkest-blue);
+			color: black;
 
 			& > .title {
 				font-size: var(--text-large);
@@ -123,32 +85,32 @@
 			}
 		}
 
+		.or {
+			text-align: center;
+			margin-block: 1rem;
+		}
+
 		.login-form {
 			display: flex;
 			flex-direction: column;
 			gap: var(--gap);
-			margin-block: 1rem;
+			margin-block-start: 1rem;
 
 			& > input {
 				margin-block-end: var(--gap);
 				padding: var(--gap);
-			}
-		}
 
-		a {
-			color: var(--light-orange);
-		}
-		a:hover {
-			color: var(--light-orange);
-			text-decoration: underline;
-			cursor: pointer;
+				&:focus {
+					outline: 2px solid var(--emerald);
+				}
+			}
 		}
 	}
 
 	hr {
 		border: 0;
 		height: 1px;
-		background: var(--lightest-blue);
+		background: var(--grey);
 		width: 100%;
 	}
 </style>
