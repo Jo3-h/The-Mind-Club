@@ -1,65 +1,88 @@
-// Pure session lifecycle state machine.
+// Session and booking lifecycles, matching the DB enums (db/schema/enums.ts):
 //
-// docs/MVP_BRIEF.md describes a simplified 4-state lifecycle:
-//   open -> locked -> completed -> charged (+ cancelled from open/locked)
+//   session_status: scheduled → completed | cancelled
+//   booking_status: pending → confirmed | cancelled
+//                   confirmed → cancelled | attended | no_show
 //
-// The existing `sessionStatusEnum` in src/lib/server/db/schema.ts (predates
-// this phase) models the payment-settlement side in more detail so that a
-// failed/disputed charge doesn't silently look "done":
-//   open -> locked -> in_progress -> completed -> settling -> settled
-//                                                           -> settlement_failed
-//                                            settled -> disputed
-//   open | locked -> cancelled
+// "Locked" is NOT stored. It is derived from the clock (D1), so nothing has to run at the lock
+// time and no row can be "open" by mistake after it. sessionPhase() is the one place that
+// decides it. "Charged" arrives with payments, on the payments table.
 //
-// ASSUMPTION: `settled` is the brief's "charged" state, and `settling` /
-// `settlement_failed` / `disputed` are implementation detail for the
-// charge-webhook pipeline (Phase 5). `settlement_failed` can retry back to
-// `settling`. Kept here as a plain string union (not imported from
-// schema.ts) so this file has zero DB dependencies and stays pure — the
-// values must stay in sync with `sessionStatusEnum` in schema.ts.
+// Plain string unions (not imported from the schema) keep this file free of DB imports; they must
+// stay in step with the enums.
 
-export type SessionStatus =
-	| 'open'
-	| 'locked'
-	| 'in_progress'
-	| 'completed'
-	| 'settling'
-	| 'settled'
-	| 'settlement_failed'
-	| 'disputed'
-	| 'cancelled';
+import { LOCK_HOURS_BEFORE_START } from '../../constants/sessions';
 
-const ALLOWED_TRANSITIONS: Record<SessionStatus, readonly SessionStatus[]> = {
-	open: ['locked', 'cancelled'],
-	locked: ['in_progress', 'cancelled'],
-	in_progress: ['completed'],
-	completed: ['settling'],
-	settling: ['settled', 'settlement_failed'],
-	settled: ['disputed'],
-	settlement_failed: ['settling'],
-	disputed: [],
+export type SessionStatus = 'scheduled' | 'completed' | 'cancelled';
+export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'attended' | 'no_show';
+
+/**
+ * Where a session is right now:
+ *   open         scheduled, before the lock: students can join and leave
+ *   locked       scheduled, inside the lock window: group size is final
+ *   in_progress  scheduled, between start and end
+ *   finished     scheduled, past its end, waiting for the tutor to mark it complete
+ *   completed / cancelled   stored end states
+ */
+export type SessionPhase =
+	'open' | 'locked' | 'in_progress' | 'finished' | 'completed' | 'cancelled';
+
+const HOUR_MS = 60 * 60 * 1000;
+
+/** When a session starting at `startsAt` locks. */
+export function lockTimeFor(startsAt: Date): Date {
+	return new Date(startsAt.getTime() - LOCK_HOURS_BEFORE_START * HOUR_MS);
+}
+
+export function sessionPhase(
+	session: { status: SessionStatus; startsAt: Date; endsAt: Date },
+	now: Date = new Date()
+): SessionPhase {
+	if (session.status !== 'scheduled') return session.status;
+	const t = now.getTime();
+	if (t < lockTimeFor(session.startsAt).getTime()) return 'open';
+	if (t < session.startsAt.getTime()) return 'locked';
+	if (t < session.endsAt.getTime()) return 'in_progress';
+	return 'finished';
+}
+
+// ---------------- transitions ----------------
+
+const SESSION_TRANSITIONS: Record<SessionStatus, readonly SessionStatus[]> = {
+	scheduled: ['completed', 'cancelled'],
+	completed: [],
 	cancelled: []
 };
 
-/** Returns true if transitioning a session from `from` to `to` is allowed. */
-export function canTransitionSessionStatus(from: SessionStatus, to: SessionStatus): boolean {
-	return ALLOWED_TRANSITIONS[from].includes(to);
+const BOOKING_TRANSITIONS: Record<BookingStatus, readonly BookingStatus[]> = {
+	pending: ['confirmed', 'cancelled'],
+	confirmed: ['cancelled', 'attended', 'no_show'],
+	cancelled: [],
+	attended: [],
+	no_show: []
+};
+
+export function canTransitionSession(from: SessionStatus, to: SessionStatus): boolean {
+	return SESSION_TRANSITIONS[from].includes(to);
 }
 
-export class InvalidSessionTransitionError extends Error {
-	constructor(from: SessionStatus, to: SessionStatus) {
-		super(`Invalid session status transition: ${from} -> ${to}`);
-		this.name = 'InvalidSessionTransitionError';
-	}
+export function canTransitionBooking(from: BookingStatus, to: BookingStatus): boolean {
+	return BOOKING_TRANSITIONS[from].includes(to);
 }
 
-/**
- * Returns the new status if the transition is valid, otherwise throws
- * `InvalidSessionTransitionError`. Callers persist the returned value.
- */
-export function transitionSessionStatus(from: SessionStatus, to: SessionStatus): SessionStatus {
-	if (!canTransitionSessionStatus(from, to)) {
-		throw new InvalidSessionTransitionError(from, to);
-	}
-	return to;
+/** A session can only be marked complete once it has ended. */
+export function canCompleteSession(
+	session: { status: SessionStatus; startsAt: Date; endsAt: Date },
+	now: Date = new Date()
+): boolean {
+	return sessionPhase(session, now) === 'finished';
+}
+
+/** A student can leave (cancel their own booking) only while the session is open (D1). */
+export function canLeaveSession(
+	session: { status: SessionStatus; startsAt: Date; endsAt: Date },
+	booking: { status: BookingStatus },
+	now: Date = new Date()
+): boolean {
+	return sessionPhase(session, now) === 'open' && canTransitionBooking(booking.status, 'cancelled');
 }

@@ -8,8 +8,9 @@
 		loading = true;
 		await authClient.signIn.social({
 			provider: 'google',
-			callbackURL: '/',
-			newUserCallbackURL: '/signup',
+			// onboarding forwards anyone who has already finished it to /account
+			callbackURL: '/onboarding',
+			newUserCallbackURL: '/onboarding',
 			errorCallbackURL: '/login?error=oauth'
 		});
 		// page navigates away on success; reset only if something failed

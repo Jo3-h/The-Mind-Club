@@ -1,77 +1,76 @@
-// Pure "is this session joinable by this student?" check, per
-// docs/MVP_BRIEF.md Phase 1 and decisions D1/D6/D7.
+// Can a student join this session right now? One rule, used by search, profiles, the session
+// page and (inside a locked transaction) the join action. Decisions D1, D6, D7.
 
-import type { SessionStatus } from './sessionLifecycle';
+import { lockTimeFor, type BookingStatus, type SessionStatus } from './sessionLifecycle';
 
-export type LocationType = 'tutor_residence' | 'classroom' | 'online';
+export type LocationType = 'online' | 'tutor_venue' | 'public_venue' | 'student_home';
+export type SessionVisibility = 'open' | 'private';
 
-export interface JoinabilitySession {
+export interface JoinableSession {
 	status: SessionStatus;
-	lockAt: Date;
-	groupSizeLimit: number;
+	visibility: SessionVisibility;
 	locationType: LocationType;
-}
-
-export interface JoinabilityParticipant {
-	userId: string;
-	/** Only 'cancelled' participants are excluded from the active count. */
-	status: 'booked' | 'cancelled' | 'attended' | 'no_show';
+	startsAt: Date;
+	capacity: number;
+	/** Seats held: confirmed + unexpired pending (see seatsHeld). */
+	seatsTaken: number;
 }
 
 export type JoinabilityReason =
 	| 'joinable'
-	| 'location_not_joinable'
-	| 'session_not_open'
-	| 'session_locked'
-	| 'already_joined'
-	| 'session_full';
+	| 'private' // a student's home (D6) or a private session
+	| 'unavailable' // cancelled or completed
+	| 'locked' // inside the lock window or already started (D1)
+	| 'already_booked'
+	| 'full';
+
+export interface BookingSeat {
+	status: BookingStatus;
+	expiresAt: Date | null;
+}
+
+/** Seats held right now: confirmed bookings plus pending ones that haven't expired. */
+export function seatsHeld(bookings: readonly BookingSeat[], now: Date = new Date()): number {
+	return bookings.filter(
+		(b) =>
+			b.status === 'confirmed' ||
+			(b.status === 'pending' && (b.expiresAt === null || b.expiresAt.getTime() > now.getTime()))
+	).length;
+}
 
 /**
- * Evaluates whether `studentUserId` can join a session right now, returning
- * 'joinable' or the first blocking reason.
- *
- * - D6: sessions at the tutor's residence are private 1:1 bookings and can
- *   never be joined by another student, regardless of status/capacity.
- * - D1: a session stops accepting joins once `now >= lockAt`, even if a
- *   scheduled job hasn't yet flipped `status` to 'locked'.
- * - D7: capacity is `groupSizeLimit`, counting only non-cancelled participants.
+ * Group size for pricing: students who are actually in the group. Pending seats don't count
+ * (they may never pay); attended / no-show do (they only exist once the session is over).
+ */
+export function pricingGroupSize(bookings: readonly Pick<BookingSeat, 'status'>[]): number {
+	return bookings.filter(
+		(b) => b.status === 'confirmed' || b.status === 'attended' || b.status === 'no_show'
+	).length;
+}
+
+/**
+ * 'joinable', or the first reason it isn't. `viewer` is null when asking "can anyone join?"
+ * (search, listings); pass whether this student already holds a seat when they try to join.
  */
 export function getJoinabilityReason(
-	session: JoinabilitySession,
-	participants: readonly JoinabilityParticipant[],
-	studentUserId: string,
+	session: JoinableSession,
+	viewer: { alreadyBooked: boolean } | null,
 	now: Date = new Date()
 ): JoinabilityReason {
-	if (session.locationType === 'tutor_residence') {
-		return 'location_not_joinable';
+	if (session.locationType === 'student_home' || session.visibility === 'private') {
+		return 'private';
 	}
-
-	if (session.status !== 'open') {
-		return 'session_not_open';
-	}
-
-	if (now.getTime() >= session.lockAt.getTime()) {
-		return 'session_locked';
-	}
-
-	const activeParticipants = participants.filter((p) => p.status !== 'cancelled');
-
-	if (activeParticipants.some((p) => p.userId === studentUserId)) {
-		return 'already_joined';
-	}
-
-	if (activeParticipants.length >= session.groupSizeLimit) {
-		return 'session_full';
-	}
-
+	if (session.status !== 'scheduled') return 'unavailable';
+	if (now.getTime() >= lockTimeFor(session.startsAt).getTime()) return 'locked';
+	if (viewer?.alreadyBooked) return 'already_booked';
+	if (session.seatsTaken >= session.capacity) return 'full';
 	return 'joinable';
 }
 
-export function isSessionJoinableByStudent(
-	session: JoinabilitySession,
-	participants: readonly JoinabilityParticipant[],
-	studentUserId: string,
+export function isJoinable(
+	session: JoinableSession,
+	viewer: { alreadyBooked: boolean } | null,
 	now: Date = new Date()
 ): boolean {
-	return getJoinabilityReason(session, participants, studentUserId, now) === 'joinable';
+	return getJoinabilityReason(session, viewer, now) === 'joinable';
 }

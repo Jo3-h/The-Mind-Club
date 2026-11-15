@@ -1,0 +1,2 @@
+ALTER TABLE "pricing_schemes" ADD COLUMN "student_fee_bps" integer DEFAULT 500 NOT NULL;--> statement-breakpoint
+ALTER TABLE "pricing_schemes" ADD CONSTRAINT "ps_student_fee_chk" CHECK ("pricing_schemes"."student_fee_bps" between 0 and 10000);

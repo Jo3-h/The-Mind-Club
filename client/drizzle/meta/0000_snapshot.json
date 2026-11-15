@@ -1,11 +1,79 @@
 {
-  "id": "2206a28d-29fd-43ba-a96e-81a8173ecdd6",
+  "id": "0b26dc73-08a0-4345-8283-c38067fe3f68",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.availability_slots": {
-      "name": "availability_slots",
+    "public.postcodes": {
+      "name": "postcodes",
+      "schema": "",
+      "columns": {
+        "postcode": {
+          "name": "postcode",
+          "type": "char(4)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "suburb": {
+          "name": "suburb",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "state": {
+          "name": "state",
+          "type": "au_state",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lat": {
+          "name": "lat",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lng": {
+          "name": "lng",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "postcodes_postcode_idx": {
+          "name": "postcodes_postcode_idx",
+          "columns": [
+            {
+              "expression": "postcode",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "postcodes_postcode_suburb_pk": {
+          "name": "postcodes_postcode_suburb_pk",
+          "columns": [
+            "postcode",
+            "suburb"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.subjects": {
+      "name": "subjects",
       "schema": "",
       "columns": {
         "id": {
@@ -15,43 +83,212 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "tutor_profile_id": {
-          "name": "tutor_profile_id",
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sort_order": {
+          "name": "sort_order",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "subjects_key_unique": {
+          "name": "subjects_key_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "key"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.courses": {
+      "name": "courses",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subject_id": {
+          "name": "subject_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
-        "day_of_week": {
-          "name": "day_of_week",
+        "year_level": {
+          "name": "year_level",
           "type": "smallint",
           "primaryKey": false,
           "notNull": true
         },
-        "start_time": {
-          "name": "start_time",
-          "type": "time",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "end_time": {
-          "name": "end_time",
-          "type": "time",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "default_location_type": {
-          "name": "default_location_type",
-          "type": "location_type",
+        "state": {
+          "name": "state",
+          "type": "au_state",
           "typeSchema": "public",
           "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
           "notNull": true
         },
-        "group_size_limit": {
-          "name": "group_size_limit",
-          "type": "integer",
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
           "primaryKey": false,
           "notNull": true,
-          "default": 1
+          "default": true
+        },
+        "sort_order": {
+          "name": "sort_order",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "courses_lookup_idx": {
+          "name": "courses_lookup_idx",
+          "columns": [
+            {
+              "expression": "year_level",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "state",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "courses_subject_id_subjects_id_fk": {
+          "name": "courses_subject_id_subjects_id_fk",
+          "tableFrom": "courses",
+          "tableTo": "subjects",
+          "columnsFrom": [
+            "subject_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "courses_key_unique": {
+          "name": "courses_key_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "key"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "courses_year_level_chk": {
+          "name": "courses_year_level_chk",
+          "value": "\"courses\".\"year_level\" between 7 and 12"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.topics": {
+      "name": "topics",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subject_id": {
+          "name": "subject_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
         },
         "is_active": {
           "name": "is_active",
@@ -66,16 +303,324 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "topics_subject_idx": {
+          "name": "topics_subject_idx",
+          "columns": [
+            {
+              "expression": "subject_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
-        "availability_slots_tutor_profile_id_tutor_profiles_id_fk": {
-          "name": "availability_slots_tutor_profile_id_tutor_profiles_id_fk",
-          "tableFrom": "availability_slots",
-          "tableTo": "tutor_profiles",
+        "topics_subject_id_subjects_id_fk": {
+          "name": "topics_subject_id_subjects_id_fk",
+          "tableFrom": "topics",
+          "tableTo": "subjects",
           "columnsFrom": [
-            "tutor_profile_id"
+            "subject_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "topics_key_unique": {
+          "name": "topics_key_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "key"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.course_topics": {
+      "name": "course_topics",
+      "schema": "",
+      "columns": {
+        "course_id": {
+          "name": "course_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "topic_id": {
+          "name": "topic_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "chapter_number": {
+          "name": "chapter_number",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "course_topics_topic_idx": {
+          "name": "course_topics_topic_idx",
+          "columns": [
+            {
+              "expression": "topic_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "course_topics_course_id_courses_id_fk": {
+          "name": "course_topics_course_id_courses_id_fk",
+          "tableFrom": "course_topics",
+          "tableTo": "courses",
+          "columnsFrom": [
+            "course_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "course_topics_topic_id_topics_id_fk": {
+          "name": "course_topics_topic_id_topics_id_fk",
+          "tableFrom": "course_topics",
+          "tableTo": "topics",
+          "columnsFrom": [
+            "topic_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "course_topics_course_id_topic_id_pk": {
+          "name": "course_topics_course_id_topic_id_pk",
+          "columns": [
+            "course_id",
+            "topic_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.tutor_profiles": {
+      "name": "tutor_profiles",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "tutor_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'onboarding'"
+        },
+        "headline": {
+          "name": "headline",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bio": {
+          "name": "bio",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "state": {
+          "name": "state",
+          "type": "au_state",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "timezone": {
+          "name": "timezone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Australia/Adelaide'"
+        },
+        "teaching_mode": {
+          "name": "teaching_mode",
+          "type": "teaching_mode",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postcode": {
+          "name": "postcode",
+          "type": "char(4)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "travel_radius_km": {
+          "name": "travel_radius_km",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "max_group_size": {
+          "name": "max_group_size",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 4
+        },
+        "base_rate_cents": {
+          "name": "base_rate_cents",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "wwcc_number": {
+          "name": "wwcc_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "wwcc_state": {
+          "name": "wwcc_state",
+          "type": "au_state",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "wwcc_status": {
+          "name": "wwcc_status",
+          "type": "wwcc_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'not_provided'"
+        },
+        "wwcc_verified_at": {
+          "name": "wwcc_verified_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "wwcc_expires_at": {
+          "name": "wwcc_expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stripe_account_id": {
+          "name": "stripe_account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stripe_details_submitted": {
+          "name": "stripe_details_submitted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "stripe_charges_enabled": {
+          "name": "stripe_charges_enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "stripe_payouts_enabled": {
+          "name": "stripe_payouts_enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "onboarding_completed_at": {
+          "name": "onboarding_completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "tutor_profiles_status_idx": {
+          "name": "tutor_profiles_status_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "tutor_profiles_user_id_user_id_fk": {
+          "name": "tutor_profiles_user_id_user_id_fk",
+          "tableFrom": "tutor_profiles",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
           ],
           "columnsTo": [
             "id"
@@ -85,70 +630,92 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "tutor_profiles_stripe_account_id_unique": {
+          "name": "tutor_profiles_stripe_account_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "stripe_account_id"
+          ]
+        }
+      },
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "tutor_max_group_chk": {
+          "name": "tutor_max_group_chk",
+          "value": "\"tutor_profiles\".\"max_group_size\" between 1 and 20"
+        },
+        "tutor_base_rate_chk": {
+          "name": "tutor_base_rate_chk",
+          "value": "\"tutor_profiles\".\"base_rate_cents\" is null or \"tutor_profiles\".\"base_rate_cents\" > 0"
+        },
+        "tutor_location_chk": {
+          "name": "tutor_location_chk",
+          "value": "\"tutor_profiles\".\"onboarding_completed_at\" is null or \"tutor_profiles\".\"teaching_mode\" = 'online'\n\t\t\t\tor (\"tutor_profiles\".\"postcode\" is not null and \"tutor_profiles\".\"travel_radius_km\" is not null)"
+        }
+      },
       "isRLSEnabled": false
     },
-    "public.payments": {
-      "name": "payments",
+    "public.student_profiles": {
+      "name": "student_profiles",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "session_participant_id": {
-          "name": "session_participant_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "stripe_payment_intent_id": {
-          "name": "stripe_payment_intent_id",
+        "user_id": {
+          "name": "user_id",
           "type": "text",
-          "primaryKey": false,
+          "primaryKey": true,
           "notNull": true
         },
-        "amount_authorized": {
-          "name": "amount_authorized",
-          "type": "numeric(10, 2)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "amount_captured": {
-          "name": "amount_captured",
-          "type": "numeric(10, 2)",
+        "state": {
+          "name": "state",
+          "type": "au_state",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": false
         },
-        "status": {
-          "name": "status",
-          "type": "payment_status",
+        "timezone": {
+          "name": "timezone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Australia/Adelaide'"
+        },
+        "postcode": {
+          "name": "postcode",
+          "type": "char(4)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "school": {
+          "name": "school",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "graduation_year": {
+          "name": "graduation_year",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "delivery_preference": {
+          "name": "delivery_preference",
+          "type": "delivery_preference",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "group_preference": {
+          "name": "group_preference",
+          "type": "group_preference",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
-          "default": "'authorized'"
+          "default": "'any'"
         },
-        "authorized_at": {
-          "name": "authorized_at",
+        "onboarding_completed_at": {
+          "name": "onboarding_completed_at",
           "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "captured_at": {
-          "name": "captured_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "failure_reason": {
-          "name": "failure_reason",
-          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -169,43 +736,211 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "payments_session_participant_id_session_participants_id_fk": {
-          "name": "payments_session_participant_id_session_participants_id_fk",
-          "tableFrom": "payments",
-          "tableTo": "session_participants",
+        "student_profiles_user_id_user_id_fk": {
+          "name": "student_profiles_user_id_user_id_fk",
+          "tableFrom": "student_profiles",
+          "tableTo": "user",
           "columnsFrom": [
-            "session_participant_id"
+            "user_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "restrict",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "payments_session_participant_id_unique": {
-          "name": "payments_session_participant_id_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "session_participant_id"
-          ]
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "student_location_chk": {
+          "name": "student_location_chk",
+          "value": "\"student_profiles\".\"onboarding_completed_at\" is null or \"student_profiles\".\"delivery_preference\" = 'online' or \"student_profiles\".\"postcode\" is not null"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.tutor_topics": {
+      "name": "tutor_topics",
+      "schema": "",
+      "columns": {
+        "tutor_id": {
+          "name": "tutor_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
         },
-        "payments_stripe_payment_intent_id_unique": {
-          "name": "payments_stripe_payment_intent_id_unique",
-          "nullsNotDistinct": false,
+        "topic_id": {
+          "name": "topic_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "tutor_topics_topic_idx": {
+          "name": "tutor_topics_topic_idx",
           "columns": [
-            "stripe_payment_intent_id"
+            {
+              "expression": "topic_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "tutor_topics_tutor_id_tutor_profiles_user_id_fk": {
+          "name": "tutor_topics_tutor_id_tutor_profiles_user_id_fk",
+          "tableFrom": "tutor_topics",
+          "tableTo": "tutor_profiles",
+          "columnsFrom": [
+            "tutor_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "tutor_topics_topic_id_topics_id_fk": {
+          "name": "tutor_topics_topic_id_topics_id_fk",
+          "tableFrom": "tutor_topics",
+          "tableTo": "topics",
+          "columnsFrom": [
+            "topic_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "tutor_topics_tutor_id_topic_id_pk": {
+          "name": "tutor_topics_tutor_id_topic_id_pk",
+          "columns": [
+            "tutor_id",
+            "topic_id"
           ]
         }
       },
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.payouts": {
-      "name": "payouts",
+    "public.student_topics": {
+      "name": "student_topics",
+      "schema": "",
+      "columns": {
+        "student_id": {
+          "name": "student_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "topic_id": {
+          "name": "topic_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "needed_by": {
+          "name": "needed_by",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notify_requested_at": {
+          "name": "notify_requested_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "student_topics_topic_idx": {
+          "name": "student_topics_topic_idx",
+          "columns": [
+            {
+              "expression": "topic_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "student_topics_student_id_student_profiles_user_id_fk": {
+          "name": "student_topics_student_id_student_profiles_user_id_fk",
+          "tableFrom": "student_topics",
+          "tableTo": "student_profiles",
+          "columnsFrom": [
+            "student_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "student_topics_topic_id_topics_id_fk": {
+          "name": "student_topics_topic_id_topics_id_fk",
+          "tableFrom": "student_topics",
+          "tableTo": "topics",
+          "columnsFrom": [
+            "topic_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "student_topics_student_id_topic_id_pk": {
+          "name": "student_topics_student_id_topic_id_pk",
+          "columns": [
+            "student_id",
+            "topic_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.weekly_availability": {
+      "name": "weekly_availability",
       "schema": "",
       "columns": {
         "id": {
@@ -215,32 +950,216 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "tutor_profile_id": {
-          "name": "tutor_profile_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "stripe_transfer_id": {
-          "name": "stripe_transfer_id",
+        "user_id": {
+          "name": "user_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
-        "amount": {
-          "name": "amount",
-          "type": "numeric(10, 2)",
+        "weekday": {
+          "name": "weekday",
+          "type": "smallint",
           "primaryKey": false,
           "notNull": true
         },
-        "period_start": {
-          "name": "period_start",
+        "start_minute": {
+          "name": "start_minute",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "end_minute": {
+          "name": "end_minute",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "weekly_availability_user_idx": {
+          "name": "weekly_availability_user_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "weekday",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "weekly_availability_user_id_user_id_fk": {
+          "name": "weekly_availability_user_id_user_id_fk",
+          "tableFrom": "weekly_availability",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "wa_weekday_chk": {
+          "name": "wa_weekday_chk",
+          "value": "\"weekly_availability\".\"weekday\" between 1 and 7"
+        },
+        "wa_range_chk": {
+          "name": "wa_range_chk",
+          "value": "\"weekly_availability\".\"start_minute\" >= 0 and \"weekly_availability\".\"end_minute\" <= 1440 and \"weekly_availability\".\"end_minute\" > \"weekly_availability\".\"start_minute\""
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.availability_exceptions": {
+      "name": "availability_exceptions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "availability_exception_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'blocked'"
+        },
+        "starts_at": {
+          "name": "starts_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
-        "period_end": {
-          "name": "period_end",
+        "ends_at": {
+          "name": "ends_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "note": {
+          "name": "note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "availability_exceptions_user_idx": {
+          "name": "availability_exceptions_user_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "starts_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "availability_exceptions_user_id_user_id_fk": {
+          "name": "availability_exceptions_user_id_user_id_fk",
+          "tableFrom": "availability_exceptions",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "ae_range_chk": {
+          "name": "ae_range_chk",
+          "value": "\"availability_exceptions\".\"ends_at\" > \"availability_exceptions\".\"starts_at\""
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.pricing_schemes": {
+      "name": "pricing_schemes",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "platform_fee_bps": {
+          "name": "platform_fee_bps",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "active_from": {
+          "name": "active_from",
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
@@ -254,37 +1173,82 @@
         }
       },
       "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "ps_fee_chk": {
+          "name": "ps_fee_chk",
+          "value": "\"pricing_schemes\".\"platform_fee_bps\" between 0 and 10000"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.pricing_tiers": {
+      "name": "pricing_tiers",
+      "schema": "",
+      "columns": {
+        "scheme_id": {
+          "name": "scheme_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "group_size": {
+          "name": "group_size",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "multiplier_bps": {
+          "name": "multiplier_bps",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
       "foreignKeys": {
-        "payouts_tutor_profile_id_tutor_profiles_id_fk": {
-          "name": "payouts_tutor_profile_id_tutor_profiles_id_fk",
-          "tableFrom": "payouts",
-          "tableTo": "tutor_profiles",
+        "pricing_tiers_scheme_id_pricing_schemes_id_fk": {
+          "name": "pricing_tiers_scheme_id_pricing_schemes_id_fk",
+          "tableFrom": "pricing_tiers",
+          "tableTo": "pricing_schemes",
           "columnsFrom": [
-            "tutor_profile_id"
+            "scheme_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "restrict",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "payouts_stripe_transfer_id_unique": {
-          "name": "payouts_stripe_transfer_id_unique",
-          "nullsNotDistinct": false,
+      "compositePrimaryKeys": {
+        "pricing_tiers_scheme_id_group_size_pk": {
+          "name": "pricing_tiers_scheme_id_group_size_pk",
           "columns": [
-            "stripe_transfer_id"
+            "scheme_id",
+            "group_size"
           ]
         }
       },
+      "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "pt_size_chk": {
+          "name": "pt_size_chk",
+          "value": "\"pricing_tiers\".\"group_size\" >= 1"
+        },
+        "pt_mult_chk": {
+          "name": "pt_mult_chk",
+          "value": "\"pricing_tiers\".\"multiplier_bps\" between 1 and 10000"
+        }
+      },
       "isRLSEnabled": false
     },
-    "public.session_participants": {
-      "name": "session_participants",
+    "public.session_series": {
+      "name": "session_series",
       "schema": "",
       "columns": {
         "id": {
@@ -294,83 +1258,131 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "session_id": {
-          "name": "session_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
+        "tutor_id": {
+          "name": "tutor_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "is_first_booker": {
-          "name": "is_first_booker",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
-        },
         "status": {
           "name": "status",
-          "type": "participant_status",
+          "type": "series_status",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
-          "default": "'booked'"
+          "default": "'active'"
         },
-        "price_authorized": {
-          "name": "price_authorized",
-          "type": "numeric(10, 2)",
+        "weekday": {
+          "name": "weekday",
+          "type": "smallint",
           "primaryKey": false,
           "notNull": true
         },
-        "price_captured": {
-          "name": "price_captured",
-          "type": "numeric(10, 2)",
+        "start_minute": {
+          "name": "start_minute",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "duration_minutes": {
+          "name": "duration_minutes",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timezone": {
+          "name": "timezone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "starts_on": {
+          "name": "starts_on",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ends_on": {
+          "name": "ends_on",
+          "type": "date",
           "primaryKey": false,
           "notNull": false
         },
-        "joined_at": {
-          "name": "joined_at",
+        "capacity": {
+          "name": "capacity",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "visibility": {
+          "name": "visibility",
+          "type": "session_visibility",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'open'"
+        },
+        "location_type": {
+          "name": "location_type",
+          "type": "location_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "suburb": {
+          "name": "suburb",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postcode": {
+          "name": "postcode",
+          "type": "char(4)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
         },
-        "cancelled_at": {
-          "name": "cancelled_at",
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true,
+          "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "session_series_tutor_idx": {
+          "name": "session_series_tutor_idx",
+          "columns": [
+            {
+              "expression": "tutor_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
-        "session_participants_session_id_sessions_id_fk": {
-          "name": "session_participants_session_id_sessions_id_fk",
-          "tableFrom": "session_participants",
-          "tableTo": "sessions",
+        "session_series_tutor_id_tutor_profiles_user_id_fk": {
+          "name": "session_series_tutor_id_tutor_profiles_user_id_fk",
+          "tableFrom": "session_series",
+          "tableTo": "tutor_profiles",
           "columnsFrom": [
-            "session_id"
+            "tutor_id"
           ],
           "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "session_participants_user_id_user_id_fk": {
-          "name": "session_participants_user_id_user_id_fk",
-          "tableFrom": "session_participants",
-          "tableTo": "user",
-          "columnsFrom": [
             "user_id"
-          ],
-          "columnsTo": [
-            "id"
           ],
           "onDelete": "restrict",
           "onUpdate": "no action"
@@ -379,11 +1391,24 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "ss_weekday_chk": {
+          "name": "ss_weekday_chk",
+          "value": "\"session_series\".\"weekday\" between 1 and 7"
+        },
+        "ss_duration_chk": {
+          "name": "ss_duration_chk",
+          "value": "\"session_series\".\"duration_minutes\" > 0"
+        },
+        "ss_capacity_chk": {
+          "name": "ss_capacity_chk",
+          "value": "\"session_series\".\"capacity\" >= 1"
+        }
+      },
       "isRLSEnabled": false
     },
-    "public.sessions": {
-      "name": "sessions",
+    "public.tutoring_sessions": {
+      "name": "tutoring_sessions",
       "schema": "",
       "columns": {
         "id": {
@@ -393,20 +1418,26 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "tutor_profile_id": {
-          "name": "tutor_profile_id",
+        "tutor_id": {
+          "name": "tutor_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "series_id": {
+          "name": "series_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "topic_id": {
+          "name": "topic_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
-        "subject_id": {
-          "name": "subject_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "availability_slot_id": {
-          "name": "availability_slot_id",
+        "course_id": {
+          "name": "course_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": false
@@ -430,12 +1461,55 @@
           "primaryKey": false,
           "notNull": true
         },
-        "group_size_limit": {
-          "name": "group_size_limit",
-          "type": "integer",
+        "suburb": {
+          "name": "suburb",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postcode": {
+          "name": "postcode",
+          "type": "char(4)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "address_line": {
+          "name": "address_line",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "meeting_url": {
+          "name": "meeting_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "capacity": {
+          "name": "capacity",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "visibility": {
+          "name": "visibility",
+          "type": "session_visibility",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
-          "default": 1
+          "default": "'open'"
+        },
+        "base_rate_cents": {
+          "name": "base_rate_cents",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pricing_scheme_id": {
+          "name": "pricing_scheme_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
         },
         "status": {
           "name": "status",
@@ -443,7 +1517,31 @@
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
-          "default": "'open'"
+          "default": "'scheduled'"
+        },
+        "created_by_user_id": {
+          "name": "created_by_user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelled_at": {
+          "name": "cancelled_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancel_reason": {
+          "name": "cancel_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -460,14 +1558,99 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "ts_tutor_time_idx": {
+          "name": "ts_tutor_time_idx",
+          "columns": [
+            {
+              "expression": "tutor_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "starts_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "ts_open_topic_time_idx": {
+          "name": "ts_open_topic_time_idx",
+          "columns": [
+            {
+              "expression": "topic_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "starts_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"tutoring_sessions\".\"status\" = 'scheduled' and \"tutoring_sessions\".\"visibility\" = 'open'",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "ts_series_idx": {
+          "name": "ts_series_idx",
+          "columns": [
+            {
+              "expression": "series_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
-        "sessions_tutor_profile_id_tutor_profiles_id_fk": {
-          "name": "sessions_tutor_profile_id_tutor_profiles_id_fk",
-          "tableFrom": "sessions",
+        "tutoring_sessions_tutor_id_tutor_profiles_user_id_fk": {
+          "name": "tutoring_sessions_tutor_id_tutor_profiles_user_id_fk",
+          "tableFrom": "tutoring_sessions",
           "tableTo": "tutor_profiles",
           "columnsFrom": [
-            "tutor_profile_id"
+            "tutor_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "tutoring_sessions_series_id_session_series_id_fk": {
+          "name": "tutoring_sessions_series_id_session_series_id_fk",
+          "tableFrom": "tutoring_sessions",
+          "tableTo": "session_series",
+          "columnsFrom": [
+            "series_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "tutoring_sessions_topic_id_topics_id_fk": {
+          "name": "tutoring_sessions_topic_id_topics_id_fk",
+          "tableFrom": "tutoring_sessions",
+          "tableTo": "topics",
+          "columnsFrom": [
+            "topic_id"
           ],
           "columnsTo": [
             "id"
@@ -475,12 +1658,25 @@
           "onDelete": "restrict",
           "onUpdate": "no action"
         },
-        "sessions_subject_id_subjects_id_fk": {
-          "name": "sessions_subject_id_subjects_id_fk",
-          "tableFrom": "sessions",
-          "tableTo": "subjects",
+        "tutoring_sessions_course_id_courses_id_fk": {
+          "name": "tutoring_sessions_course_id_courses_id_fk",
+          "tableFrom": "tutoring_sessions",
+          "tableTo": "courses",
           "columnsFrom": [
-            "subject_id"
+            "course_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "tutoring_sessions_pricing_scheme_id_pricing_schemes_id_fk": {
+          "name": "tutoring_sessions_pricing_scheme_id_pricing_schemes_id_fk",
+          "tableFrom": "tutoring_sessions",
+          "tableTo": "pricing_schemes",
+          "columnsFrom": [
+            "pricing_scheme_id"
           ],
           "columnsTo": [
             "id"
@@ -488,12 +1684,226 @@
           "onDelete": "restrict",
           "onUpdate": "no action"
         },
-        "sessions_availability_slot_id_availability_slots_id_fk": {
-          "name": "sessions_availability_slot_id_availability_slots_id_fk",
-          "tableFrom": "sessions",
-          "tableTo": "availability_slots",
+        "tutoring_sessions_created_by_user_id_user_id_fk": {
+          "name": "tutoring_sessions_created_by_user_id_user_id_fk",
+          "tableFrom": "tutoring_sessions",
+          "tableTo": "user",
           "columnsFrom": [
-            "availability_slot_id"
+            "created_by_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "ts_time_chk": {
+          "name": "ts_time_chk",
+          "value": "\"tutoring_sessions\".\"ends_at\" > \"tutoring_sessions\".\"starts_at\""
+        },
+        "ts_capacity_chk": {
+          "name": "ts_capacity_chk",
+          "value": "\"tutoring_sessions\".\"capacity\" >= 1"
+        },
+        "ts_home_private_chk": {
+          "name": "ts_home_private_chk",
+          "value": "\"tutoring_sessions\".\"location_type\" <> 'student_home' or \"tutoring_sessions\".\"visibility\" = 'private'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.bookings": {
+      "name": "bookings",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "session_id": {
+          "name": "session_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "student_id": {
+          "name": "student_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "booking_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "price_cap_cents": {
+          "name": "price_cap_cents",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "final_price_cents": {
+          "name": "final_price_cents",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "confirmed_at": {
+          "name": "confirmed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelled_at": {
+          "name": "cancelled_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelled_by_user_id": {
+          "name": "cancelled_by_user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancel_reason": {
+          "name": "cancel_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "bookings_one_live_per_student_idx": {
+          "name": "bookings_one_live_per_student_idx",
+          "columns": [
+            {
+              "expression": "session_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "student_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"bookings\".\"status\" <> 'cancelled'",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "bookings_session_idx": {
+          "name": "bookings_session_idx",
+          "columns": [
+            {
+              "expression": "session_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "bookings_student_idx": {
+          "name": "bookings_student_idx",
+          "columns": [
+            {
+              "expression": "student_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "bookings_session_id_tutoring_sessions_id_fk": {
+          "name": "bookings_session_id_tutoring_sessions_id_fk",
+          "tableFrom": "bookings",
+          "tableTo": "tutoring_sessions",
+          "columnsFrom": [
+            "session_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "bookings_student_id_student_profiles_user_id_fk": {
+          "name": "bookings_student_id_student_profiles_user_id_fk",
+          "tableFrom": "bookings",
+          "tableTo": "student_profiles",
+          "columnsFrom": [
+            "student_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "bookings_cancelled_by_user_id_user_id_fk": {
+          "name": "bookings_cancelled_by_user_id_user_id_fk",
+          "tableFrom": "bookings",
+          "tableTo": "user",
+          "columnsFrom": [
+            "cancelled_by_user_id"
           ],
           "columnsTo": [
             "id"
@@ -508,8 +1918,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.subjects": {
-      "name": "subjects",
+    "public.payments": {
+      "name": "payments",
       "schema": "",
       "columns": {
         "id": {
@@ -519,78 +1929,104 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "name": {
-          "name": "name",
+        "booking_id": {
+          "name": "booking_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payer_user_id": {
+          "name": "payer_user_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "created_at": {
-          "name": "created_at",
+        "status": {
+          "name": "status",
+          "type": "payment_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "currency": {
+          "name": "currency",
+          "type": "char(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'aud'"
+        },
+        "stripe_payment_intent_id": {
+          "name": "stripe_payment_intent_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stripe_setup_intent_id": {
+          "name": "stripe_setup_intent_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stripe_payment_method_id": {
+          "name": "stripe_payment_method_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stripe_destination_account_id": {
+          "name": "stripe_destination_account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "amount_authorized_cents": {
+          "name": "amount_authorized_cents",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "amount_captured_cents": {
+          "name": "amount_captured_cents",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "application_fee_cents": {
+          "name": "application_fee_cents",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "amount_refunded_cents": {
+          "name": "amount_refunded_cents",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "failure_code": {
+          "name": "failure_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "failure_message": {
+          "name": "failure_message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "authorized_at": {
+          "name": "authorized_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "subjects_name_unique": {
-          "name": "subjects_name_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.tutor_profiles": {
-      "name": "tutor_profiles",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "bio": {
-          "name": "bio",
-          "type": "text",
-          "primaryKey": false,
           "notNull": false
         },
-        "timezone": {
-          "name": "timezone",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'Australia/Melbourne'"
-        },
-        "stripe_account_id": {
-          "name": "stripe_account_id",
-          "type": "text",
+        "captured_at": {
+          "name": "captured_at",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
-        },
-        "is_active": {
-          "name": "is_active",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": true
         },
         "created_at": {
           "name": "created_at",
@@ -607,89 +2043,124 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "payments_booking_idx": {
+          "name": "payments_booking_idx",
+          "columns": [
+            {
+              "expression": "booking_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "payments_status_idx": {
+          "name": "payments_status_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
-        "tutor_profiles_user_id_user_id_fk": {
-          "name": "tutor_profiles_user_id_user_id_fk",
-          "tableFrom": "tutor_profiles",
-          "tableTo": "user",
+        "payments_booking_id_bookings_id_fk": {
+          "name": "payments_booking_id_bookings_id_fk",
+          "tableFrom": "payments",
+          "tableTo": "bookings",
           "columnsFrom": [
-            "user_id"
+            "booking_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "payments_payer_user_id_user_id_fk": {
+          "name": "payments_payer_user_id_user_id_fk",
+          "tableFrom": "payments",
+          "tableTo": "user",
+          "columnsFrom": [
+            "payer_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "tutor_profiles_user_id_unique": {
-          "name": "tutor_profiles_user_id_unique",
+        "payments_stripe_payment_intent_id_unique": {
+          "name": "payments_stripe_payment_intent_id_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "user_id"
+            "stripe_payment_intent_id"
+          ]
+        },
+        "payments_stripe_setup_intent_id_unique": {
+          "name": "payments_stripe_setup_intent_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "stripe_setup_intent_id"
           ]
         }
       },
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "payments_amounts_chk": {
+          "name": "payments_amounts_chk",
+          "value": "coalesce(\"payments\".\"amount_captured_cents\", 0) >= 0 and \"payments\".\"amount_refunded_cents\" >= 0"
+        }
+      },
       "isRLSEnabled": false
     },
-    "public.tutor_subjects": {
-      "name": "tutor_subjects",
+    "public.stripe_events": {
+      "name": "stripe_events",
       "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": true,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "received_at": {
+          "name": "received_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "now()"
         },
-        "tutor_profile_id": {
-          "name": "tutor_profile_id",
-          "type": "uuid",
+        "processed_at": {
+          "name": "processed_at",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true
-        },
-        "subject_id": {
-          "name": "subject_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "tutor_subjects_tutor_profile_id_tutor_profiles_id_fk": {
-          "name": "tutor_subjects_tutor_profile_id_tutor_profiles_id_fk",
-          "tableFrom": "tutor_subjects",
-          "tableTo": "tutor_profiles",
-          "columnsFrom": [
-            "tutor_profile_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "tutor_subjects_subject_id_subjects_id_fk": {
-          "name": "tutor_subjects_subject_id_subjects_id_fk",
-          "tableFrom": "tutor_subjects",
-          "tableTo": "subjects",
-          "columnsFrom": [
-            "subject_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -953,6 +2424,14 @@
           "primaryKey": false,
           "notNull": false
         },
+        "role": {
+          "name": "role",
+          "type": "user_role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'student'"
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -1053,49 +2532,134 @@
     }
   },
   "enums": {
+    "public.au_state": {
+      "name": "au_state",
+      "schema": "public",
+      "values": [
+        "SA",
+        "NSW",
+        "VIC",
+        "QLD",
+        "WA",
+        "TAS",
+        "ACT",
+        "NT"
+      ]
+    },
+    "public.availability_exception_kind": {
+      "name": "availability_exception_kind",
+      "schema": "public",
+      "values": [
+        "blocked",
+        "extra"
+      ]
+    },
+    "public.booking_status": {
+      "name": "booking_status",
+      "schema": "public",
+      "values": [
+        "pending",
+        "confirmed",
+        "cancelled",
+        "attended",
+        "no_show"
+      ]
+    },
+    "public.delivery_preference": {
+      "name": "delivery_preference",
+      "schema": "public",
+      "values": [
+        "online",
+        "in_person",
+        "either"
+      ]
+    },
+    "public.group_preference": {
+      "name": "group_preference",
+      "schema": "public",
+      "values": [
+        "any",
+        "small",
+        "one_on_one"
+      ]
+    },
     "public.location_type": {
       "name": "location_type",
       "schema": "public",
       "values": [
-        "tutor_residence",
-        "classroom",
-        "online"
-      ]
-    },
-    "public.participant_status": {
-      "name": "participant_status",
-      "schema": "public",
-      "values": [
-        "booked",
-        "cancelled",
-        "attended",
-        "no_show"
+        "online",
+        "tutor_venue",
+        "public_venue",
+        "student_home"
       ]
     },
     "public.payment_status": {
       "name": "payment_status",
       "schema": "public",
       "values": [
+        "requires_action",
+        "card_saved",
         "authorized",
         "captured",
-        "capture_failed",
+        "partially_refunded",
         "refunded",
-        "disputed"
+        "cancelled",
+        "failed"
+      ]
+    },
+    "public.series_status": {
+      "name": "series_status",
+      "schema": "public",
+      "values": [
+        "active",
+        "ended"
       ]
     },
     "public.session_status": {
       "name": "session_status",
       "schema": "public",
       "values": [
-        "open",
-        "locked",
-        "in_progress",
+        "scheduled",
         "completed",
-        "settling",
-        "settled",
-        "settlement_failed",
-        "disputed",
         "cancelled"
+      ]
+    },
+    "public.session_visibility": {
+      "name": "session_visibility",
+      "schema": "public",
+      "values": [
+        "open",
+        "private"
+      ]
+    },
+    "public.teaching_mode": {
+      "name": "teaching_mode",
+      "schema": "public",
+      "values": [
+        "online",
+        "in_person",
+        "both"
+      ]
+    },
+    "public.tutor_status": {
+      "name": "tutor_status",
+      "schema": "public",
+      "values": [
+        "onboarding",
+        "active",
+        "paused",
+        "suspended"
+      ]
+    },
+    "public.wwcc_status": {
+      "name": "wwcc_status",
+      "schema": "public",
+      "values": [
+        "not_provided",
+        "pending",
+        "verified",
+        "rejected",
+        "expired"
       ]
     },
     "public.user_role": {

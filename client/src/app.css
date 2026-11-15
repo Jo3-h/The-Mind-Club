@@ -21,3 +21,182 @@ h6 {
 *::after {
 	box-sizing: border-box;
 }
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+body {
+	margin: 0;
+	font-family: var(--sans);
+	color: var(--ink);
+	background: var(--surface);
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+}
+h1,
+h2,
+h3 {
+	margin: 0;
+	font-family: var(--serif);
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	line-height: 1.08;
+}
+h2 {
+	font-size: clamp(30px, 4vw, 44px);
+}
+p {
+	margin: 0;
+}
+
+.wrap {
+	width: min(1160px, 100% - 48px);
+	margin-inline: auto;
+}
+.eyebrow {
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--green);
+}
+.num {
+	font-variant-numeric: tabular-nums;
+}
+.meta {
+	font-size: 14px;
+	color: var(--muted);
+}
+
+.btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	height: 44px;
+	padding: 0 20px;
+	border-radius: 999px;
+	border: 1px solid transparent;
+	font: 500 15px var(--sans);
+	text-decoration: none;
+	cursor: pointer;
+	transition:
+		background 0.15s,
+		border-color 0.15s;
+}
+.btn-primary {
+	background: var(--green);
+	color: #fff;
+}
+.btn-primary:hover {
+	background: var(--green-hover);
+}
+.btn-ghost {
+	background: var(--surface);
+	color: var(--ink);
+	border-color: var(--line);
+}
+.btn-ghost:hover {
+	border-color: #c9d0d5;
+}
+
+.avatar {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	display: grid;
+	place-items: center;
+	flex: none;
+	background: var(--green-tint);
+	color: var(--green);
+	font: 600 12px var(--sans);
+}
+
+.seats {
+	display: flex;
+	gap: 6px;
+}
+.seat {
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	display: grid;
+	place-items: center;
+	border: 1.5px dashed #c3cbd0;
+	font-size: 11px;
+	font-weight: 600;
+	color: #fff;
+}
+.seat.on {
+	background: var(--green);
+	border: 0;
+}
+.seat.next {
+	border-color: var(--amber);
+	animation: pulse 2s infinite;
+}
+@keyframes pulse {
+	50% {
+		opacity: 0.25;
+	}
+}
+
+/* Header — add class="site-header" to your existing header element */
+.site-header {
+	position: sticky;
+	top: 0;
+	z-index: 50;
+	border-bottom: 1px solid transparent;
+}
+
+/* ── Scroll-driven extras (progressive enhancement) ───────────────
+   Static page is the fallback; motion only where supported and wanted. */
+@supports (animation-timeline: view()) {
+	@media (prefers-reduced-motion: no-preference) {
+		.site-header {
+			animation: header-solid linear both;
+			animation-timeline: scroll(root);
+			animation-range: 0 80px;
+		}
+		@keyframes header-solid {
+			to {
+				background: rgb(255 255 255 / 0.82);
+				backdrop-filter: blur(14px);
+				border-bottom-color: var(--line);
+			}
+		}
+
+		/* Add class="reveal" to anything; style="--d:1" etc. to stagger */
+		.reveal {
+			animation: reveal linear both;
+			animation-timeline: view();
+			animation-range: entry calc(var(--d, 0) * 10%) cover calc(25% + var(--d, 0) * 10%);
+		}
+		@keyframes reveal {
+			from {
+				opacity: 0;
+				transform: translateY(40px);
+			}
+		}
+	}
+}
+
+@font-face {
+	font-family: 'Satoshi';
+	src: url('/fonts/satoshi/Satoshi-Variable.woff2') format('woff2');
+	font-weight: 300 900;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Satoshi';
+	src: url('/fonts/satoshi/Satoshi-VariableItalic.woff2') format('woff2');
+	font-weight: 300 900;
+	font-style: italic;
+	font-display: swap;
+}
+
+body {
+	font-family: var(--font-sans);
+}

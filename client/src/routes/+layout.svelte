@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '$lib/styles/fonts.css';
 	import '$lib/styles/colours.css';
 	import '$lib/styles/variables.css';
 	import '../app.css';
@@ -41,5 +42,6 @@
 		display: flex;
 		flex-direction: column;
 		flex: 1;
+		padding-inline: 5rem;
 	}
 </style>

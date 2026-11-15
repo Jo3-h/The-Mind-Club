@@ -1,49 +1,53 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { resolve } from '$app/paths';
 	import GoogleButton from '$lib/components/auth/GoogleButton.svelte';
 	import Button from '$lib/components/basic/Button.svelte';
 	import { SignupSchema } from '$lib/schemas/auth/auth';
+	import type { PageProps } from './$types';
+
+	let { form }: PageProps = $props();
 
 	let email = $state('');
 	let password = $state('');
-	let accountType = $state('');
 	let name = $state('');
 
 	let errorMessage: string | null = $state(null);
+	let submitting = $state(false);
 
+	// clear the error as soon as they edit a field
 	$effect(() => {
-		email;
-		password;
-		name;
+		void email;
+		void password;
+		void name;
 		errorMessage = null;
 	});
 </script>
 
 <div class="signup-page">
 	<div class="signup">
-		<span class="title">Signup for an account</span>
-		<span>Welcome back! Your groups and bookings are right where you left them.</span>
+		<span class="title">Create your account</span>
+		<span>Next, we'll ask whether you're a student or a tutor.</span>
 		<form
 			class="login-form"
 			method="post"
 			action="?/signUp"
 			use:enhance={({ cancel }) => {
-				const parsed = SignupSchema.safeParse({
-					email,
-					password,
-					name,
-					accountType
-				});
+				const parsed = SignupSchema.safeParse({ email, password, name });
 				if (!parsed.success) {
-					errorMessage = parsed.error.issues.flatMap((issue) => issue.message).join(', ');
-					console.log({
-						email,
-						password,
-						name,
-						accountType
-					});
+					errorMessage = parsed.error.issues.map((issue) => issue.message).join(', ');
 					cancel();
+					return;
 				}
+				submitting = true;
+				return async ({ result, update }) => {
+					submitting = false;
+					if (result.type === 'failure') {
+						errorMessage = (result.data as { message?: string })?.message ?? 'Could not sign up';
+						return;
+					}
+					await update();
+				};
 			}}
 		>
 			<span>NAME</span>
@@ -68,15 +72,17 @@
 				required
 			/>
 
-			{#if errorMessage}
-				<p class="error" role="alert">{errorMessage}</p>
+			{#if errorMessage ?? form?.message}
+				<p class="error" role="alert">{errorMessage ?? form?.message}</p>
 			{/if}
 
-			<Button directive="theme">Signup</Button>
+			<Button directive="theme" disabled={submitting}>
+				{submitting ? 'Creating account…' : 'Sign up'}
+			</Button>
 		</form>
 		<GoogleButton />
 		<hr />
-		<span>Already have an account? <a href="/login">Login here</a>.</span>
+		<span>Already have an account? <a href={resolve('/login')}>Login here</a>.</span>
 	</div>
 </div>
 
@@ -112,92 +118,6 @@
 				margin-block-end: var(--gap);
 				padding: var(--gap);
 			}
-		}
-	}
-
-	.sr-only {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		padding: 0;
-		margin: -1px;
-		overflow: hidden;
-		clip: rect(0, 0, 0, 0);
-		white-space: nowrap;
-		border: 0;
-	}
-
-	.account-type {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 0.5rem;
-		border: none;
-		padding: 0;
-		margin: 0 0 var(--gap);
-	}
-
-	.option {
-		position: relative;
-		display: flex;
-		flex-direction: column;
-		gap: 0.25rem;
-		padding: 0.75rem;
-		border: 1px solid #eaeaea;
-		border-radius: 6px;
-		background: #fff;
-		cursor: pointer;
-		transition:
-			border-color 150ms ease,
-			box-shadow 150ms ease;
-
-		&:hover {
-			border-color: #999;
-		}
-
-		/* hide the native radio but keep it focusable */
-		& > input {
-			position: absolute;
-			opacity: 0;
-			pointer-events: none;
-		}
-
-		&:has(input:checked) {
-			border-color: #000;
-			box-shadow: 0 0 0 1px #000;
-		}
-
-		&:has(input:focus-visible) {
-			outline: 2px solid #0070f3;
-			outline-offset: 2px;
-		}
-	}
-
-	.option-head {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-
-	.option-title {
-		font-weight: 600;
-		color: #000;
-	}
-
-	.option-desc {
-		color: #666;
-		font-size: 0.75rem;
-		line-height: 1.4;
-	}
-
-	.indicator {
-		width: 14px;
-		height: 14px;
-		border-radius: 50%;
-		border: 1px solid #ccc;
-		transition: all 150ms ease;
-
-		.option:has(input:checked) & {
-			border: 4px solid #000;
 		}
 	}
 </style>

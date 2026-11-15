@@ -1,10 +1,12 @@
 <script lang="ts">
 	import Button from '$lib/components/basic/Button.svelte';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import HeroIcon from '$lib/components/branding/HeroIcon.svelte';
+	import Alert from '$lib/components/basic/Alert.svelte';
 
 	function redirectToTutors() {
-		goto('/tutors');
+		goto(resolve('/tutors'));
 	}
 </script>
 
@@ -17,10 +19,11 @@
 		<div class="title">
 			<span> Tutoring Services that work for you</span>
 			<div class="buttons">
-				<Button style="border-radius: 0.7rem;" directive="theme">Browse Tutors</Button>
-				<Button style="border-radius: 0.7rem;">Get Started</Button>
+				<Button variant="primary" onclick={redirectToTutors}>BROWSE TUTORS</Button>
+				<Button>Get Started</Button>
 			</div>
 		</div>
+
 		<div class="hero">
 			<HeroIcon />
 		</div>

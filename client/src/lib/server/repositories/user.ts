@@ -1,31 +1,35 @@
-import { db } from '$lib/server/db';
-import { user } from '$lib/server/db/auth-schema.js';
-import { eq, or } from 'drizzle-orm';
-import { studentProfiles, tutorProfiles } from '../db/schema';
-import type { Transaction } from '../types/db';
+import { eq } from 'drizzle-orm';
+import { db, type Executor } from '../db';
+import { user } from '../db/auth-schema';
+import { studentProfiles } from '../db/schema/student-profiles';
+import { tutorProfiles } from '../db/schema/tutor-profiles';
+
+export type OnboardingRole = 'student' | 'tutor';
 
 export const User = {
-	async hasProfile({ userId }: { userId: string }, tx: Transaction | null = null) {
-		const conn = tx ?? db;
-		const [student] = await conn
-			.select({ id: studentProfiles.id })
-			.from(studentProfiles)
-			.where(eq(studentProfiles.userId, userId))
-			.limit(1);
-		if (student) return true;
-
-		const [tutor] = await conn
-			.select({ id: tutorProfiles.id })
-			.from(tutorProfiles)
-			.where(eq(tutorProfiles.userId, userId))
-			.limit(1);
-		return Boolean(tutor);
+	/**
+	 * True once the user has finished onboarding as either role.
+	 * A profile row alone isn't enough: only `onboarding_completed_at` counts.
+	 */
+	async isOnboarded(params: { userId: string; tx?: Executor }) {
+		const { userId, tx = db } = params;
+		const [[student], [tutor]] = await Promise.all([
+			tx
+				.select({ at: studentProfiles.onboardingCompletedAt })
+				.from(studentProfiles)
+				.where(eq(studentProfiles.userId, userId))
+				.limit(1),
+			tx
+				.select({ at: tutorProfiles.onboardingCompletedAt })
+				.from(tutorProfiles)
+				.where(eq(tutorProfiles.userId, userId))
+				.limit(1)
+		]);
+		return Boolean(student?.at || tutor?.at);
 	},
-	async setRole(
-		{ userId, role }: { userId: string; role: 'student' | 'tutor' },
-		tx: Transaction | null = null
-	) {
-		const conn = tx ?? db;
-		await conn.update(user).set({ role }).where(eq(user.id, userId));
+
+	async setRole(params: { userId: string; role: OnboardingRole; tx?: Executor }) {
+		const { userId, role, tx = db } = params;
+		await tx.update(user).set({ role }).where(eq(user.id, userId));
 	}
 };

@@ -1,16 +1,20 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { enhance } from '$app/forms';
 	import GoogleButton from '$lib/components/auth/GoogleButton.svelte';
 	import Button from '$lib/components/basic/Button.svelte';
 	import { EmailSchema } from '$lib/schemas/auth/auth';
+	import type { PageProps } from './$types';
+
+	let { data, form }: PageProps = $props();
 
 	let email = $state('');
 	let password = $state('');
 	let errorMessage: string | null = $state(null);
 
 	$effect(() => {
-		email;
-		password;
+		void email;
+		void password;
 		errorMessage = null;
 	});
 </script>
@@ -31,6 +35,10 @@
 				}
 			}}
 		>
+			{#if data.redirectTo}
+				<input type="hidden" name="redirectTo" value={data.redirectTo} />
+			{/if}
+
 			<span>EMAIL</span>
 			<input
 				name="email"
@@ -50,8 +58,8 @@
 				required
 			/>
 
-			{#if errorMessage}
-				<p class="error" role="alert">{errorMessage}</p>
+			{#if errorMessage ?? form?.message}
+				<p class="error" role="alert">{errorMessage ?? form?.message}</p>
 			{/if}
 
 			<Button directive="theme">Login</Button>
@@ -59,7 +67,7 @@
 		<span class="or"></span>
 		<GoogleButton />
 		<hr />
-		<span>Don't have an account? <a href="/signup">Sign up here</a>.</span>
+		<span>Don't have an account? <a href={resolve('/signup')}>Sign up here</a>.</span>
 	</div>
 </div>
 

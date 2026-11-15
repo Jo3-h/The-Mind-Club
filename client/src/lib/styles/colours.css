@@ -1,93 +1,58 @@
 :root {
-	/* Base Colours */
-	--grey: rgba(255, 255, 255, 0.778);
+	/* Primary */
+	/* Emerald. --primary passes WCAG AA (~5:1) with white text. */
+	--darkest-primary: hsl(162, 75%, 12%);
+	--darker-primary: hsl(161, 78%, 17%);
+	--dark-primary: hsl(160, 80%, 22%);
+	--primary: hsl(160, 80%, 27%);
+	--light-primary: hsl(158, 55%, 45%);
+	--lighter-primary: hsl(156, 55%, 78%);
+	--lightest-primary: hsl(155, 60%, 96%);
 
-	--delta-lightness: 5%;
+	/* Neutrals */
+	--darkest-grey: hsl(215, 17%, 30%);
+	--darker-grey: hsl(214, 11%, 49%);
+	--dark-grey: hsl(213, 17%, 63%);
+	--grey: hsl(207, 24%, 74%);
+	--light-grey: hsl(208, 17%, 83%);
+	--lighter-grey: hsl(210, 24%, 92%);
+	--lightest-grey: hsl(210, 21%, 98%);
 
-	/* primary colour */
-	--o-hue: 25;
-	--o-saturation: 100%;
-	--o-lightness: 40%;
-	--lightest-orange: hsl(
-		var(--o-hue),
-		var(--o-saturation),
-		calc(var(--o-lightness) + 2 * var(--delta-lightness))
-	);
-	--light-orange: hsl(
-		var(--o-hue),
-		var(--o-saturation),
-		calc(var(--o-lightness) + var(--delta-lightness))
-	);
-	--orange: hsl(var(--o-hue), var(--o-saturation), var(--o-lightness));
-	--dark-orange: hsl(
-		var(--o-hue),
-		var(--o-saturation),
-		calc(var(--o-lightness) - var(--delta-lightness))
-	);
-	--darkest-orange: hsl(
-		var(--o-hue),
-		var(--o-saturation),
-		calc(var(--o-lightness) - 2 * var(--delta-lightness))
-	);
+	/* Accents */
 
-	/* secondary colour */
-	--b-hue: 195;
-	--b-saturation: 53%;
-	--b-lightness: 79%;
-	--lightest-blue: hsl(
-		var(--b-hue),
-		var(--b-saturation),
-		calc(var(--b-lightness) + 2 * var(--delta-lightness))
-	);
-	--light-blue: hsl(
-		var(--b-hue),
-		var(--b-saturation),
-		calc(var(--b-lightness) + 1 * var(--delta-lightness))
-	);
-	--blue: hsl(
-		var(--b-hue),
-		var(--b-saturation),
-		calc(var(--b-lightness) + 0 * var(--delta-lightness))
-	);
-	--dark-blue: hsl(
-		var(--b-hue),
-		var(--b-saturation),
-		calc(var(--b-lightness) - 1 * var(--delta-lightness))
-	);
-	--darkest-blue: hsl(
-		var(--b-hue),
-		var(--b-saturation),
-		calc(var(--b-lightness) - 2 * var(--delta-lightness))
-	);
+	/* Blue Accent - Info */
+	--darkest-blue: hsl(207, 45%, 23%);
+	--darker-blue: hsl(208, 63%, 27%);
+	--dark-blue: hsl(207, 64%, 39%);
+	--blue: hsl(207, 61%, 49%);
+	--light-blue: hsl(208, 60%, 62%);
+	--lighter-blue: hsl(206, 79%, 81%);
+	--lightest-blue: hsl(206, 100%, 97%);
 
-	/* EMERALD */
-	--e-hue: hsl(161, 94%, 30%);
-	--e-hue: 161;
-	--e-saturation: 94%;
-	--e-lightness: 30%;
-	--lightest-emerald: hsl(
-		var(--e-hue),
-		var(--e-saturation),
-		calc(var(--e-lightness) + 2 * var(--delta-lightness))
-	);
-	--light-emerald: hsl(
-		var(--e-hue),
-		var(--e-saturation),
-		calc(var(--e-lightness) + 1 * var(--delta-lightness))
-	);
-	--emerald: hsl(
-		var(--e-hue),
-		var(--e-saturation),
-		calc(var(--e-lightness) + 0 * var(--delta-lightness))
-	);
-	--dark-emerald: hsl(
-		var(--e-hue),
-		var(--e-saturation),
-		calc(var(--e-lightness) - 1 * var(--delta-lightness))
-	);
-	--darkest-emerald: hsl(
-		var(--e-hue),
-		var(--e-saturation),
-		calc(var(--e-lightness) - 2 * var(--delta-lightness))
-	);
+	/* Green Accent - Success */
+	--darkest-green: hsl(155, 59%, 20%);
+	--darker-green: hsl(145, 64%, 28%);
+	--dark-green: hsl(145, 62%, 38%);
+	--green: hsl(145, 55%, 49%);
+	--light-green: hsl(146, 57%, 65%);
+	--lighter-green: hsl(141, 67%, 80%);
+	--lightest-green: hsl(142, 81%, 94%);
+
+	/* Yellow Accent - Warning */
+	--darkest-yellow: hsl(44, 66%, 22%);
+	--darker-yellow: hsl(43, 64%, 34%);
+	--dark-yellow: hsl(44, 57%, 52%);
+	--yellow: hsl(43, 87%, 67%);
+	--light-yellow: hsl(44, 90%, 80%);
+	--lighter-yellow: hsl(44, 90%, 92%);
+	--lightest-yellow: hsl(44, 100%, 98%);
+
+	/* Red Accent - Danger */
+	--darkest-red: hsl(1, 60%, 24%);
+	--darker-red: hsl(1, 67%, 32%);
+	--dark-red: hsl(360, 71%, 42%);
+	--red: hsl(0, 71%, 53%);
+	--light-red: hsl(0, 70%, 64%);
+	--lighter-red: hsl(0, 79%, 81%);
+	--lightest-red: hsl(0, 77%, 95%);
 }

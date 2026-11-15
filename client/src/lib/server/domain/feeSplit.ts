@@ -1,29 +1,75 @@
-// Pure platform-fee calculation. Per D3 (docs/MVP_BRIEF.md), the 10% platform
-// fee is taken out of the tutor's share — the student is charged the full
-// per-student price, and the fee is deducted before the tutor is paid out via
-// the Stripe Connect Express destination charge's application_fee_amount.
+// Fees, in integer cents. Two fees, both in basis points on the pricing scheme:
+//
+//   tutor price      what the tutor's rate and the group-size discount give (domain/tierPricing.ts)
+//   + booking fee    student_fee_bps of the tutor price, paid by the student
+//   = student pays   the ONLY number a student ever sees (ACL single-price rule: mandatory fees
+//                    must be inside the displayed price)
+//
+//   tutor price
+//   - platform fee   platform_fee_bps of the tutor price, taken from the tutor's share
+//   = tutor payout
+//
+// The platform keeps booking fee + platform fee (Stripe's application_fee_amount, later).
+// Bookings store TUTOR prices (price cap, final price); fees are derived from them when shown or
+// charged. Because withBookingFee only ever grows with its input, the cheaper tutor price is
+// always the cheaper student price, so the price cap rule works the same on either.
 
-import { PLATFORM_FEE_BASIS_POINTS } from './constants';
+export interface FeeRates {
+	/** Added on top of the tutor price, paid by the student. */
+	studentFeeBps: number;
+	/** Taken out of the tutor price, before payout. */
+	platformFeeBps: number;
+}
 
-export interface FeeSplit {
-	amountCents: number;
+export interface ChargeSplit {
+	tutorPriceCents: number;
+	bookingFeeCents: number;
+	/** tutorPriceCents + bookingFeeCents. What the student is charged. */
+	studentPaysCents: number;
 	platformFeeCents: number;
-	tutorAmountCents: number;
+	/** tutorPriceCents − platformFeeCents. What reaches the tutor. */
+	tutorPayoutCents: number;
+	/** bookingFeeCents + platformFeeCents. What the platform keeps. */
+	platformKeepsCents: number;
+}
+
+function assertCents(name: string, value: number) {
+	if (!Number.isInteger(value) || value < 0) {
+		throw new RangeError(`${name} must be a non-negative integer, got ${value}`);
+	}
+}
+
+function assertBps(name: string, value: number) {
+	if (!Number.isInteger(value) || value < 0 || value > 10_000) {
+		throw new RangeError(`${name} must be an integer between 0 and 10000, got ${value}`);
+	}
+}
+
+/** `bps` of `cents`, rounded to the nearest cent (half up). */
+export function basisPointsOf(cents: number, bps: number): number {
+	assertCents('cents', cents);
+	assertBps('bps', bps);
+	return Math.round((cents * bps) / 10_000);
+}
+
+/** What a student pays for a tutor price: the tutor price plus the booking fee. */
+export function withBookingFee(tutorPriceCents: number, studentFeeBps: number): number {
+	return tutorPriceCents + basisPointsOf(tutorPriceCents, studentFeeBps);
 }
 
 /**
- * Splits a single participant's charge amount into the platform's fee and
- * the tutor's share. `platformFeeCents + tutorAmountCents === amountCents`
- * always holds (fee is rounded to the nearest cent; any rounding remainder
- * stays with the tutor's share).
+ * Splits one student's charge. Always holds:
+ *   studentPaysCents = tutorPayoutCents + platformKeepsCents
  */
-export function splitPaymentCents(amountCents: number): FeeSplit {
-	if (!Number.isInteger(amountCents) || amountCents < 0) {
-		throw new RangeError(`amountCents must be a non-negative integer, got ${amountCents}`);
-	}
-
-	const platformFeeCents = Math.round((amountCents * PLATFORM_FEE_BASIS_POINTS) / 10_000);
-	const tutorAmountCents = amountCents - platformFeeCents;
-
-	return { amountCents, platformFeeCents, tutorAmountCents };
+export function splitCharge(tutorPriceCents: number, rates: FeeRates): ChargeSplit {
+	const bookingFeeCents = basisPointsOf(tutorPriceCents, rates.studentFeeBps);
+	const platformFeeCents = basisPointsOf(tutorPriceCents, rates.platformFeeBps);
+	return {
+		tutorPriceCents,
+		bookingFeeCents,
+		studentPaysCents: tutorPriceCents + bookingFeeCents,
+		platformFeeCents,
+		tutorPayoutCents: tutorPriceCents - platformFeeCents,
+		platformKeepsCents: bookingFeeCents + platformFeeCents
+	};
 }

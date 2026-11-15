@@ -4,12 +4,13 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { sveltekitCookies } from 'better-auth/svelte-kit';
 import { getRequestEvent } from '$app/server';
 import { db } from '$lib/server/db';
+
+import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '$env/static/private';
 import {
 	ADMIN_ACCOUNT_TYPE,
 	STUDENT_ACCOUNT_TYPE,
 	TUTOR_ACCOUNT_TYPE
-} from '$lib/schemas/auth/auth';
-import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '$env/static/private';
+} from '$lib/constants/profile';
 
 export const auth = betterAuth({
 	baseURL: env.ORIGIN,

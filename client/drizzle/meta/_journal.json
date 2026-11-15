@@ -5,29 +5,43 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1786263243130,
-      "tag": "0000_smooth_mongoose",
+      "when": 1794016450147,
+      "tag": "0000_mighty_thunderball",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1789547510470,
-      "tag": "0001_colorful_guardsmen",
+      "when": 1794016495879,
+      "tag": "0001_tutoring_sessions_no_overlap",
       "breakpoints": true
     },
     {
       "idx": 2,
       "version": "7",
-      "when": 1791457012978,
-      "tag": "0002_tranquil_silhouette",
+      "when": 1794622880618,
+      "tag": "0002_course_topic_references",
       "breakpoints": true
     },
     {
       "idx": 3,
       "version": "7",
-      "when": 1791457217393,
-      "tag": "0003_chubby_tarot",
+      "when": 1794637437160,
+      "tag": "0003_pricing_student_fee",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794638054076,
+      "tag": "0004_tutor_meeting_url",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794638054792,
+      "tag": "0005_tutoring_sessions_no_overlap_constraint",
       "breakpoints": true
     }
   ]
